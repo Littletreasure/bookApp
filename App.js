@@ -1,29 +1,61 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ImageBackground } from "react-native";
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
+import AddBook from "./Components/AddBook";
+import BooksGot from "./Components/BooksGot";
+import BooksWanted from "./Components/BooksWanted";
 
-export default class App extends Component {
+class App extends Component {
+  onPress = num => {
+    console.log(num);
+    let window;
+    if (num === 1) window = "AddBook";
+    else if (num === 2) window = "BooksGot";
+    else window = "BooksWanted";
+    this.props.navigation.navigate(window);
+  };
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>Ruth's Books</Text>
-        <Text style={styles.newBook}>Add New Book</Text>
-        <Text style={styles.list}>Books Got</Text>
-        <Text style={styles.list}>Books Wanted</Text>
+        <ImageBackground
+          style={styles.background}
+          source={require("./books3.jpg")}
+        >
+          <Text style={styles.header}>Ruth's Books</Text>
+          <Text style={styles.newBook} onPress={() => this.onPress(1)}>
+            Add New Book
+          </Text>
+          <Text style={styles.list} onPress={() => this.onPress(2)}>
+            Books Got
+          </Text>
+          <Text style={styles.list} onPress={() => this.onPress(3)}>
+            Books Wanted
+          </Text>
+        </ImageBackground>
       </View>
     );
   }
 }
+
+const AppNavigator = createStackNavigator({
+  Home: App,
+  AddBook,
+  BooksGot,
+  BooksWanted
+});
+
+const AppContainer = createAppContainer(AppNavigator);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "center",
-    marginTop: 100,
-    backgroundColor: "#F5FCFF"
+    alignItems: "center"
   },
   header: {
+    marginTop: 60,
     padding: 10,
     fontSize: 35,
     marginBottom: 40
@@ -37,5 +69,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 10,
     fontSize: 20
+  },
+  background: {
+    width: "100%",
+    height: "100%",
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingLeft: 60
   }
 });
+
+export default AppContainer;
