@@ -2,14 +2,15 @@ import React, { Component } from "react";
 import { StyleSheet, Text, View, ImageBackground } from "react-native";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
-//import AddBook from "./Components/AddBook";
+import AddBook from "./Components/AddBook";
 import Books from "./Components/Books";
 
 class App extends Component {
   onPress = num => {
     let window;
     let props;
-    if (num === 1) {
+    if (num === 1) window = "AddBook";
+    else if (num === 2) {
       window = "Books";
       props = "Got";
     } else {
@@ -26,11 +27,13 @@ class App extends Component {
           source={require("./books3.jpg")}
         >
           <Text style={styles.header}>Ruth's Books</Text>
-
-          <Text style={styles.list} onPress={() => this.onPress(1)}>
-            Books Got
+          <Text style={styles.newBook} onPress={() => this.onPress(1)}>
+            Add New Book
           </Text>
           <Text style={styles.list} onPress={() => this.onPress(2)}>
+            Books Got
+          </Text>
+          <Text style={styles.list} onPress={() => this.onPress(3)}>
             Books Wanted
           </Text>
         </ImageBackground>
@@ -41,6 +44,7 @@ class App extends Component {
 
 const AppNavigator = createStackNavigator({
   Home: App,
+  AddBook,
   Books
 });
 

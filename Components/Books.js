@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import AddBook from "./AddBook";
 
 export default class Books extends Component {
   state = {
@@ -57,8 +58,14 @@ export default class Books extends Component {
         Author: "Miranda Dickinson"
       }
     ],
-    type: null
+    type: null,
+    clicked: false
   };
+  handleAddPress = () => {
+    console.log("clicked");
+    this.setState({ clicked: true });
+  };
+
   handlePress = input => {
     if (this.state.type === "Got") {
       const bookArray = [...this.state.booksGot];
@@ -70,11 +77,34 @@ export default class Books extends Component {
       this.setState({ booksWanted: [...bookArray] });
     }
   };
+  handleAddBook = (title, author, type) => {
+    console.log(title, author, type);
+    if (type === "Got") {
+      const newId = this.state.booksGot.length + 1;
+      const newBook = { bookId: newId, Title: title, Author: author };
+      this.setState(currentState => {
+        return {
+          booksGot: [...currentState.booksGot, newBook],
+          clicked: false
+        };
+      });
+    } else {
+      const newId = this.state.booksWanted.length + 1;
+      const newBook = { bookId: newId, Title: title, Author: author };
+      this.setState(currentState => {
+        return {
+          booksWanted: [...currentState.booksWanted, newBook],
+          clicked: false
+        };
+      });
+    }
+  };
+
   componentDidMount = () => {
     this.setState({ type: this.props.navigation.getParam("type") });
   };
   render() {
-    const { booksGot, booksWanted, type } = this.state;
+    const { booksGot, booksWanted, type, clicked } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.header}>Books {type}</Text>
@@ -110,6 +140,11 @@ export default class Books extends Component {
                   <View style={styles.textBox}>
                     <Text style={styles.text}>{book.Author}</Text>
                   </View>
+                  <View>
+                    <TouchableOpacity>
+                      <Text style={styles.cross}> x </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               ))}
             </View>
@@ -123,10 +158,25 @@ export default class Books extends Component {
                   <View style={styles.textBox}>
                     <Text style={styles.text}>{book.Author}</Text>
                   </View>
+                  <View>
+                    <TouchableOpacity>
+                      <Text style={styles.cross}>x</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               ))}
             </View>
           )}
+          <View style={styles.addBook}>
+            <TouchableOpacity onPress={() => this.handleAddPress()}>
+              <Text style={styles.addText}>Add Book</Text>
+            </TouchableOpacity>
+            {clicked ? (
+              <View>
+                <AddBook type={type} handleAddBook={this.handleAddBook} />
+              </View>
+            ) : null}
+          </View>
         </View>
       </View>
     );
@@ -138,7 +188,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
+    paddingLeft: 10,
+    paddingRight: 10
   },
   header: {
     marginTop: 40,
@@ -170,7 +222,8 @@ const styles = StyleSheet.create({
     paddingBottom: 5
   },
   text: {
-    fontSize: 15
+    fontSize: 15,
+    paddingLeft: 5
   },
   text1: {
     fontSize: 20
@@ -184,5 +237,22 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 15,
     color: "white"
+  },
+  cross: {
+    color: "red",
+    paddingLeft: 5
+  },
+  addBook: {
+    paddingTop: 10,
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  addText: {
+    fontSize: 12,
+    marginBottom: 20,
+    padding: 5,
+    borderColor: "black",
+    borderWidth: 1
   }
 });
