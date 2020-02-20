@@ -1,110 +1,66 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView
+} from "react-native";
 import AddBook from "./AddBook";
+import axios from "axios";
 
 export default class Books extends Component {
   state = {
-    booksGot: [
-      {
-        bookId: 1,
-        Title: "Pride & Prejudice",
-        Author: "Jane Austen"
-      },
-      {
-        bookId: 2,
-        Title: "Little Women",
-        Author: "Louisa May Alcott"
-      },
-      {
-        bookId: 3,
-        Title: "What Alice Forgot",
-        Author: "Liane Moriaty"
-      },
-      {
-        bookId: 4,
-        Title: "Fairytale of New York",
-        Author: "Miranda Dickinson"
-      },
-      {
-        bookId: 5,
-        Title: "A Place Called Here",
-        Author: "Cecelia Ahern"
-      }
-    ],
-    booksWanted: [
-      {
-        bookId: 1,
-        Title: "The Love Detective",
-        Author: "Alexandra Potter"
-      },
-      {
-        bookId: 2,
-        Title: "Act of Faith",
-        Author: "Erica James"
-      },
-      {
-        bookId: 3,
-        Title: "The Other Half Lives",
-        Author: "Sophie Hannah"
-      },
-      {
-        bookId: 4,
-        Title: "The Beach Hut",
-        Author: "Veronica Henry"
-      },
-      {
-        bookId: 5,
-        Title: "I'll Take New York",
-        Author: "Miranda Dickinson"
-      }
-    ],
+    books: [],
+    sort_by: "author",
+    order: "asc",
+    isLoading: true,
     type: null,
     clicked: false
   };
   handleAddPress = () => {
-    console.log("clicked");
     this.setState({ clicked: true });
   };
-
-  handlePress = input => {
-    if (this.state.type === "Got") {
-      const bookArray = [...this.state.booksGot];
-      bookArray.sort((a, b) => a[input].localeCompare(b[input]));
-      this.setState({ booksGot: [...bookArray] });
-    } else {
-      const bookArray = [...this.state.booksWanted];
-      bookArray.sort((a, b) => a[input].localeCompare(b[input]));
-      this.setState({ booksWanted: [...bookArray] });
-    }
+  handleDelPress = id => {
+    const type = this.state.type;
+    axios
+      .delete(
+        `https://ruths-collection-app.herokuapp.com/api/books${type}/${id}`
+      )
+      .then(response => {
+        this.setState(currentState => {
+          const newArray = currentState.books.filter(book => {
+            return book.book_id !== id;
+          });
+          return { books: newArray };
+        });
+      });
   };
-  handleAddBook = (title, author, type) => {
-    console.log(title, author, type);
-    if (type === "Got") {
-      const newId = this.state.booksGot.length + 1;
-      const newBook = { bookId: newId, Title: title, Author: author };
-      this.setState(currentState => {
-        return {
-          booksGot: [...currentState.booksGot, newBook],
-          clicked: false
-        };
-      });
-    } else {
-      const newId = this.state.booksWanted.length + 1;
-      const newBook = { bookId: newId, Title: title, Author: author };
-      this.setState(currentState => {
-        return {
-          booksWanted: [...currentState.booksWanted, newBook],
-          clicked: false
-        };
-      });
-    }
+  handlePress = input => {
+    const bookArray = [...this.state.books];
+    bookArray.sort((a, b) => a[input].localeCompare(b[input]));
+    this.setState({ books: [...bookArray] });
+  };
+  handleAddBook = book => {
+    this.setState(currentState => {
+      return { books: [book, ...currentState.books], clicked: false };
+    });
   };
 
   componentDidMount = () => {
-    this.setState({ type: this.props.navigation.getParam("type") });
+    const type = this.props.navigation.getParam("type");
+    axios
+      .get(`https://ruths-collection-app.herokuapp.com/api/books${type}`)
+      .then(books => {
+        this.setState({
+          books: books.data.books,
+          isLoading: false,
+          type: type
+        });
+      });
   };
   render() {
-    const { booksGot, booksWanted, type, clicked } = this.state;
+    const { books, isLoading, clicked, type } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.header}>Books {type}</Text>
@@ -114,7 +70,7 @@ export default class Books extends Component {
               <Text style={styles.text1}>Title</Text>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => this.handlePress("Title")}
+                onPress={() => this.handlePress("title")}
               >
                 <Text style={styles.buttonText}>sort</Text>
               </TouchableOpacity>
@@ -123,50 +79,41 @@ export default class Books extends Component {
               <Text style={styles.text1}>Author</Text>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => this.handlePress("Author")}
+                onPress={() => this.handlePress("author")}
               >
                 <Text style={styles.buttonText}>sort</Text>
               </TouchableOpacity>
             </View>
           </View>
-
-          {type === "Got" ? (
+          {isLoading ? (
             <View>
-              {booksGot.map(book => (
-                <View style={styles.books} key={book.bookId}>
-                  <View style={styles.textBox}>
-                    <Text style={styles.text}>{book.Title}</Text>
-                  </View>
-                  <View style={styles.textBox}>
-                    <Text style={styles.text}>{book.Author}</Text>
-                  </View>
-                  <View>
-                    <TouchableOpacity>
-                      <Text style={styles.cross}> x </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
+              <Text>loading ...</Text>
             </View>
           ) : (
             <View>
-              {booksWanted.map(book => (
-                <View style={styles.books} key={book.bookId}>
+              {books.map(book => (
+                <View style={styles.books} key={book.book_id}>
                   <View style={styles.textBox}>
-                    <Text style={styles.text}>{book.Title}</Text>
+                    <Text style={styles.text}>{book.title}</Text>
                   </View>
                   <View style={styles.textBox}>
-                    <Text style={styles.text}>{book.Author}</Text>
+                    <Text style={styles.text}>{book.author}</Text>
                   </View>
                   <View>
                     <TouchableOpacity>
-                      <Text style={styles.cross}>x</Text>
+                      <Text
+                        style={styles.cross}
+                        onPress={() => this.handleDelPress(book.book_id)}
+                      >
+                        x
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               ))}
             </View>
           )}
+
           <View style={styles.addBook}>
             <TouchableOpacity onPress={() => this.handleAddPress()}>
               <Text style={styles.addText}>Add Book</Text>

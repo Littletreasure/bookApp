@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import {
   StyleSheet,
   Text,
@@ -10,13 +11,21 @@ import {
 
 export default class AddBook extends Component {
   state = {
-    title: null,
-    author: null
+    title: "",
+    author: ""
   };
 
   handlePress = (title, author, type) => {
-    this.props.handleAddBook(title, author, type);
-    Keyboard.dismiss();
+    axios
+      .post(`https://ruths-collection-app.herokuapp.com/api/books${type}`, {
+        title: title,
+        author: author
+      })
+      .then(book => {
+        this.setState({ title: "", author: "" });
+        this.props.handleAddBook(book.data.book);
+        Keyboard.dismiss();
+      });
   };
 
   render() {
