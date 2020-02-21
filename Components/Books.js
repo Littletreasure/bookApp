@@ -4,7 +4,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  Dimensions
 } from "react-native";
 import AddBook from "./AddBook";
 import axios from "axios";
@@ -61,70 +62,76 @@ export default class Books extends Component {
   };
   render() {
     const { books, isLoading, clicked, type } = this.state;
+    const screenHeight = Dimensions.get("window").height;
     return (
-      <View style={styles.container}>
-        <Text style={styles.header}>Books {type}</Text>
-        <View style={styles.booksContainer}>
-          <View style={styles.books}>
-            <View style={styles.textBox1}>
-              <Text style={styles.text1}>Title</Text>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => this.handlePress("title")}
-              >
-                <Text style={styles.buttonText}>sort</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.textBox1}>
-              <Text style={styles.text1}>Author</Text>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => this.handlePress("author")}
-              >
-                <Text style={styles.buttonText}>sort</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          {isLoading ? (
-            <View>
-              <Text>loading ...</Text>
-            </View>
-          ) : (
-            <View>
-              {books.map(book => (
-                <View style={styles.books} key={book.book_id}>
-                  <View style={styles.textBox}>
-                    <Text style={styles.text}>{book.title}</Text>
-                  </View>
-                  <View style={styles.textBox}>
-                    <Text style={styles.text}>{book.author}</Text>
-                  </View>
-                  <View>
-                    <TouchableOpacity>
-                      <Text
-                        style={styles.cross}
-                        onPress={() => this.handleDelPress(book.book_id)}
-                      >
-                        x
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-            </View>
-          )}
-
-          <View style={styles.addBook}>
-            <TouchableOpacity onPress={() => this.handleAddPress()}>
-              <Text style={styles.addText}>Add Book</Text>
-            </TouchableOpacity>
-            {clicked ? (
-              <View>
-                <AddBook type={type} handleAddBook={this.handleAddBook} />
+      <View style={{ flex: 1, height: screenHeight }}>
+        <ScrollView
+          showsVerticalScrollIndicator={true}
+          contentContainerStyle={styles.container}
+        >
+          <Text style={styles.header}>Books {type}</Text>
+          <View style={styles.booksContainer}>
+            <View style={styles.books}>
+              <View style={styles.textBox1}>
+                <Text style={styles.text1}>Title</Text>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => this.handlePress("title")}
+                >
+                  <Text style={styles.buttonText}>sort</Text>
+                </TouchableOpacity>
               </View>
-            ) : null}
+              <View style={styles.textBox1}>
+                <Text style={styles.text1}>Author</Text>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => this.handlePress("author")}
+                >
+                  <Text style={styles.buttonText}>sort</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {isLoading ? (
+              <View>
+                <Text>loading ...</Text>
+              </View>
+            ) : (
+              <View>
+                {books.map(book => (
+                  <View style={styles.books} key={book.book_id}>
+                    <View style={styles.textBox}>
+                      <Text style={styles.text}>{book.title}</Text>
+                    </View>
+                    <View style={styles.textBox}>
+                      <Text style={styles.text}>{book.author}</Text>
+                    </View>
+                    <View>
+                      <TouchableOpacity>
+                        <Text
+                          style={styles.cross}
+                          onPress={() => this.handleDelPress(book.book_id)}
+                        >
+                          x
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
+            <View style={styles.addBook}>
+              <TouchableOpacity onPress={() => this.handleAddPress()}>
+                <Text style={styles.addText}>Add Book</Text>
+              </TouchableOpacity>
+              {clicked ? (
+                <View>
+                  <AddBook type={type} handleAddBook={this.handleAddBook} />
+                </View>
+              ) : null}
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
     );
   }
@@ -132,7 +139,7 @@ export default class Books extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -140,7 +147,7 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   header: {
-    marginTop: 40,
+    marginTop: 20,
     padding: 10,
     fontSize: 35,
     marginBottom: 20
@@ -149,7 +156,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "stretch",
-    padding: 10
+    padding: 10,
+    marginBottom: 350
   },
   books: {
     flexDirection: "row",
@@ -178,7 +186,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "grey",
     marginLeft: 10,
-    height: "65%",
+    height: "66%",
     alignSelf: "center"
   },
   buttonText: {
@@ -187,16 +195,17 @@ const styles = StyleSheet.create({
   },
   cross: {
     color: "red",
+    fontSize: 15,
     paddingLeft: 5
   },
   addBook: {
-    paddingTop: 10,
+    paddingTop: 15,
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center"
   },
   addText: {
-    fontSize: 12,
+    fontSize: 15,
     marginBottom: 20,
     padding: 5,
     borderColor: "black",
