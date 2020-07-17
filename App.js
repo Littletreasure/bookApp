@@ -2,11 +2,10 @@ import React, { Component } from "react";
 import { StyleSheet, Text, View, ImageBackground } from "react-native";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
-//import AddBook from "./Components/AddBook";
 import Books from "./Components/Books";
 
 class App extends Component {
-  onPress = num => {
+  onPress = (num) => {
     let window;
     let props;
     if (num === 1) {
@@ -41,7 +40,7 @@ class App extends Component {
 
 const AppNavigator = createStackNavigator({
   Home: App,
-  Books
+  Books,
 });
 
 const AppContainer = createAppContainer(AppNavigator);
@@ -51,23 +50,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
   },
   header: {
     marginTop: 60,
     padding: 10,
     fontSize: 35,
-    marginBottom: 40
+    marginBottom: 40,
   },
   newBook: {
     marginTop: 20,
     padding: 10,
-    fontSize: 20
+    fontSize: 20,
   },
   list: {
     marginTop: 20,
     padding: 10,
-    fontSize: 20
+    fontSize: 20,
   },
   background: {
     width: "100%",
@@ -76,8 +75,8 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingLeft: 60
-  }
+    paddingLeft: 60,
+  },
 });
 
 export default AppContainer;
